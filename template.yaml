@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  The relatively minimal amount of stuff to recreate the
+  DeltaInitialValue problem
+Transform:
+- AWS::Serverless-2016-10-31
+
+Resources:
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: problem/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 3
+      Description: A minimal Lambda function that recreates the counter problem
+      Layers:
+        - arn:aws:lambda:ap-southeast-1:901920570463:layer:aws-otel-python-amd64-ver-1-18-0:2
+      Tracing: "Active"
+      Policies:
+        # Give Lambda basic execution Permission to the helloFromLambda
+        - AWSLambdaBasicExecutionRole
+        - "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+        - Version: 2012-10-17
+          Statement:
+            - Sid: MetricStreamAccess
+              Effect: Allow
+              Action:
+                - "cloudwatch:PutMetricStream"
+                - "cloudwatch:StopMetricStreams"
+                - "cloudwatch:GetMetricStream"
+                - "cloudwatch:StartMetricStreams"
+                - "cloudwatch:PutMetricData"
+                - "cloudwatch:GetMetricData"
+              Resource: "*"
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/otel-instrument
+          OPENTELEMETRY_COLLECTOR_CONFIG_FILE: /var/task/collector.yaml
+
+Outputs:
+  LambdaFunction:
+    Description: "This lamdba function causes the problem"
+    Value: !GetAtt LambdaFunction.Arn
