@@ -14,7 +14,7 @@ The deployment is done via SAM CLI, with the following commands:
 ``` bash
 sam build --use-container
 sam package --s3-prefix "delta-initial-value-minimum-project" --s3-bucket "s3-bucket-name-here" --output-template-file packaged.yaml
-sam deploy --stack-name "delta-initial-value-minimum-project" --template packaged.yaml --capabilities CAPABILITY_IAM --s3-prefix "sam-app" --s3-bucket "s3-bucket-name-here" --no-fail-on-empty-changeset
+sam deploy --stack-name "delta-initial-value-minimum-project" --template packaged.yaml --capabilities CAPABILITY_IAM --s3-prefix "delta-initial-value-minimum-project" --s3-bucket "s3-bucket-name-here" --no-fail-on-empty-changeset
 ```
 
 ## Expected Result
